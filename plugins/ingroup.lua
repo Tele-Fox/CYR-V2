@@ -646,7 +646,7 @@ local function realmadd(msg)
   end
   local data = load_data(_config.moderation.data)
   if is_realm(msg) then
-    return 'Realm is already added.'
+    return 'Realm is already installed.'
   end
     receiver = get_receiver(msg)
     chat_info(receiver, check_member_realm_add,{receiver=receiver, data=data, msg = msg})
@@ -659,7 +659,7 @@ function modrem(msg)
   end
   local data = load_data(_config.moderation.data)
   if not is_group(msg) then
-    return 'Group is not added.'
+    return 'Group is not intalled.'
   end
     receiver = get_receiver(msg)
     chat_info(receiver, check_member_modrem,{receiver=receiver, data=data, msg = msg})
@@ -672,7 +672,7 @@ function realmrem(msg)
   end
   local data = load_data(_config.moderation.data)
   if not is_realm(msg) then
-    return 'Realm is not added.'
+    return 'Realm is not installed.'
   end
     receiver = get_receiver(msg)
     chat_info(receiver, check_member_realmrem,{receiver=receiver, data=data, msg = msg})
@@ -711,10 +711,10 @@ local function promote(receiver, member_username, member_id)
   local data = load_data(_config.moderation.data)
   local group = string.gsub(receiver, 'chat#id', '')
   if not data[group] then
-    return send_large_msg(receiver, 'Group is not added.')
+    return send_large_msg(receiver, 'Group is not installed.')
   end
   if data[group]['moderators'][tostring(member_id)] then
-    return send_large_msg(receiver, member_username..' is already a moderator.')
+    return send_large_msg(receiver, member_username..' is already a mod user.')
   end
   data[group]['moderators'][tostring(member_id)] = member_username
   save_data(_config.moderation.data, data)
@@ -739,7 +739,7 @@ local function demote(receiver, member_username, member_id)
   local data = load_data(_config.moderation.data)
   local group = string.gsub(receiver, 'chat#id', '')
   if not data[group] then
-    return send_large_msg(receiver, 'Group is not added.')
+    return send_large_msg(receiver, 'Group is not installed.')
   end
   if not data[group]['moderators'][tostring(member_id)] then
     return send_large_msg(receiver, member_username..' is not a moderator.')
@@ -770,7 +770,7 @@ local function setowner_by_reply(extra, success, result)
   local name_log = msg.from.print_name:gsub("_", " ")
   data[tostring(msg.to.id)]['set_owner'] = tostring(msg.from.id)
       save_data(_config.moderation.data, data)
-      local text = msg.from.print_name:gsub("_", " ").." is the owner now"
+      local text = msg.from.print_name:gsub("_", " ").." is the leader now"
       return send_large_msg(receiver, text)
 end
 
@@ -815,11 +815,11 @@ local function modlist(msg)
   local data = load_data(_config.moderation.data)
   local groups = "groups"
   if not data[tostring(groups)][tostring(msg.to.id)] then
-    return 'Group is not added.'
+    return 'Group is not installed.'
   end
   -- determine if table is empty
   if next(data[tostring(msg.to.id)]['moderators']) == nil then --fix way
-    return 'No moderator in this group.'
+    return 'No mod users in this group.'
   end
   local i = 1
   local message = '\nList of moderators for ' .. string.gsub(msg.to.print_name, '_', ' ') .. ':\n'
@@ -947,44 +947,44 @@ local function run(msg, matches)
   end
 if msg.to.type == 'chat' then
   if is_admin1(msg) or not is_support(msg.from.id) then-- Admin only
-	  if matches[1] == 'add' and not matches[2] then
+	  if matches[1] == 'install' and not matches[2] then
 		if not is_admin1(msg) and not is_support(msg.from.id) then-- Admin only
 			return
 		end
 		if is_realm(msg) then
-		   return 'Error: Already a realm.'
+		   return '#Error: Already a core.'
 		end
-		print("group "..msg.to.print_name.."("..msg.to.id..") added")
+		print("group "..msg.to.print_name.."("..msg.to.id..") installed")
 		return modadd(msg)
 	  end
-	   if matches[1] == 'add' and matches[2] == 'realm' then
+	   if matches[1] == 'install' and matches[2] == 'core' then
 		if not is_sudo(msg) then-- Admin only
 			return
 		end
 		if is_group(msg) then
-		   return 'Error: Already a group.'
+		   return '#Error: Already a group.'
 		end
-		print("group "..msg.to.print_name.."("..msg.to.id..") added as a realm")
+		print("group "..msg.to.print_name.."("..msg.to.id..") added as a core")
 		return realmadd(msg)
 	  end
-	  if matches[1] == 'rem' and not matches[2] then
+	  if matches[1] == 'unistall' and not matches[2] then
 		if not is_admin1(msg) and not is_support(msg.from.id) then-- Admin only
 			return
 		end
 		if not is_group(msg) then
-		   return 'Error: Not a group.'
+		   return '#Error: Not a group.'
 		end
-		print("group "..msg.to.print_name.."("..msg.to.id..") removed")
+		print("group "..msg.to.print_name.."("..msg.to.id..") unistalled")
 		return modrem(msg)
 	  end
-	  if matches[1] == 'rem' and matches[2] == 'realm' then
+	  if matches[1] == 'unistall' and matches[2] == 'core' then
 		if not is_sudo(msg) then-- Sudo only
 			return
 		end
 		if not is_realm(msg) then
-		   return 'Error: Not a realm.'
+		   return '#Error: Not a core.'
 		end
-		print("group "..msg.to.print_name.."("..msg.to.id..") removed as a realm")
+		print("group "..msg.to.print_name.."("..msg.to.id..") removed as a core")
 		return realmrem(msg)
 	  end
 	end
@@ -1000,7 +1000,7 @@ if msg.to.type == 'chat' then
 		end
 	--chat_upgrade(chat_id, ok_cb, false)
   end ]]
-  if matches[1] == 'chat_created' and msg.from.id == 0 and group_type == "realm" then
+  if matches[1] == 'chat_created' and msg.from.id == 0 and group_type == "core" then
     return autorealmadd(msg)
   end
   if msg.to.id and data[tostring(msg.to.id)] then
@@ -1129,7 +1129,7 @@ if msg.to.type == 'chat' then
         return
       end
       if not is_owner(msg) then
-        return "Only the owner can prmote new moderators"
+        return "Only the leader can prmote new moderators"
       end
       if type(msg.reply_id)~="nil" then
           msgr = get_message(msg.reply_id, promote_by_reply, false)
@@ -1140,7 +1140,7 @@ if msg.to.type == 'chat' then
         return
       end
       if not is_owner(msg) then
-        return "Only owner can promote"
+        return "Only leader can promote"
       end
 	local member = matches[2]
 	local cbres_extra = {
@@ -1157,7 +1157,7 @@ if msg.to.type == 'chat' then
         return
       end
       if not is_owner(msg) then
-        return "Only the owner can demote moderators"
+        return "Only the leader can demote moderators"
       end
       if type(msg.reply_id)~="nil" then
           msgr = get_message(msg.reply_id, demote_by_reply, false)
@@ -1168,7 +1168,7 @@ if msg.to.type == 'chat' then
         return
       end
       if not is_owner(msg) then
-        return "Only owner can demote"
+        return "Only leader can demote"
       end
       if string.gsub(matches[2], "@", "") == msg.from.username and not is_owner(msg) then
         return "You can't demote yourself"
@@ -1496,39 +1496,39 @@ if msg.to.type == 'chat' then
       end
       return "Group link:\n"..group_link
     end
-    if matches[1] == 'setowner' and matches[2] then
+    if matches[1] == 'setleader' and matches[2] then
       if not is_owner(msg) then
-        return "For owner only!"
+        return "For leader only!"
       end
       data[tostring(msg.to.id)]['set_owner'] = matches[2]
       save_data(_config.moderation.data, data)
-      local text = matches[2].." added as owner"
+      local text = matches[2].." added as leader"
       return text
     end
-    if matches[1] == 'setowner' and not matches[2] then
+    if matches[1] == 'setleader' and not matches[2] then
       if not is_owner(msg) then
-        return "only for the owner!"
+        return "only for the leader!"
       end
       if type(msg.reply_id)~="nil" then
           msgr = get_message(msg.reply_id, setowner_by_reply, false)
       end
     end
 end
-    if matches[1] == 'owner' then
+    if matches[1] == 'leader' then
       local group_owner = data[tostring(msg.to.id)]['set_owner']
       if not group_owner then
-        return "no owner,ask admins in support groups to set owner for your group"
+        return "no leader,ask admins in support groups to set leader for your group"
       end
-      return "Group owner is ["..group_owner..']'
+      return "Group leader is ["..group_owner..']'
     end
-    if matches[1] == 'setgpowner' then
+    if matches[1] == 'setgpleader' then
       local receiver = "chat#id"..matches[2]
       if not is_admin1(msg) then
         return "For admins only!"
       end
       data[tostring(matches[2])]['set_owner'] = matches[3]
       save_data(_config.moderation.data, data)
-      local text = matches[3].." added as owner"
+      local text = matches[3].." added as leader"
       send_large_msg(receiver, text)
       return
     end
@@ -1548,7 +1548,7 @@ end
 if msg.to.type == 'chat' then
     if matches[1] == 'clean' then
       if not is_owner(msg) then
-        return "Only owner can clean"
+        return "Only leader can clean"
       end
       if matches[2] == 'member' then
         if not is_owner(msg) then
@@ -1590,10 +1590,10 @@ if msg.to.type == 'chat' then
           print("Closing Group..."),
           chat_info(receiver, killchat, {receiver=receiver})
       else
-          return 'This is a realm'
+          return 'This is a core'
       end
    end
-    if matches[1] == 'kill' and matches[2] == 'realm' then
+    if matches[1] == 'kill' and matches[2] == 'core' then
      if not is_admin1(msg) then
          return nil
      end
@@ -1641,10 +1641,10 @@ end
 
 return {
   patterns = {
-  "^[#!/](add)$",
-  "^[#!/](add) (realm)$",
-  "^[#!/](rem)$",
-  "^[#!/](rem) (realm)$",
+  "^[#!/](install)$",
+  "^[#!/](install) (core)$",
+  "^[#!/](unistall)$",
+  "^[#!/](unistall) (core)$",
   "^[#!/](rules)$",
   "^[#!/](about)$",
   "^[#!/](setname) (.*)$",
@@ -1653,16 +1653,16 @@ return {
   "^[#!/](promote)",
   "^[#!/](clean) (.*)$",
   "^[#!/](kill) (chat)$",
-  "^[#!/](kill) (realm)$",
+  "^[#!/](kill) (core)$",
   "^[#!/](demote) (.*)$",
   "^[#!/](demote)",
   "^[#!/](set) ([^%s]+) (.*)$",
   "^[#!/](lock) (.*)$",
-  "^[#!/](setowner) (%d+)$",
-  "^[#!/](setowner)",
-  "^[#!/](owner)$",
+  "^[#!/](setleader) (%d+)$",
+  "^[#!/](setleader)",
+  "^[#!/](leader)$",
   "^[#!/](res) (.*)$",
-  "^[#!/](setgpowner) (%d+) (%d+)$",-- (group id) (owner id)
+  "^[#!/](setgpleader) (%d+) (%d+)$",-- (group id) (owner id)
   "^[#!/](unlock) (.*)$",
   "^[#!/](setflood) (%d+)$",
   "^[#!/](settings)$",
