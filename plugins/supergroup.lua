@@ -39,7 +39,7 @@ local function check_member_super(cb_extra, success, result)
       end
       data[tostring(groups)][tostring(msg.to.id)] = msg.to.id
       save_data(_config.moderation.data, data)
-	  local text = 'SuperGroup has been added!'
+	  local text = 'SuperGP installed by|'..msg.from.print_name..'|'
       return reply_msg(msg.id, text, ok_cb, false)
     end
   end
@@ -63,7 +63,7 @@ local function check_member_superrem(cb_extra, success, result)
       end
       data[tostring(groups)][tostring(msg.to.id)] = nil
       save_data(_config.moderation.data, data)
-	  local text = 'SuperGroup has been removed'
+	  local text = 'SuperGP unistalled by|'..msg.from.print_name..'|'
       return reply_msg(msg.id, text, ok_cb, false)
     end
   end
@@ -216,7 +216,7 @@ local function lock_group_spam(msg, data, target)
     return
   end
   if not is_owner(msg) then
-    return "Owners only!"
+    return "Leader only!"
   end
   local group_spam_lock = data[tostring(target)]['settings']['lock_spam']
   if group_spam_lock == 'yes' then
@@ -1925,12 +1925,12 @@ end
 
 return {
   patterns = {
-	"^[#!/]([Aa]dd)$",
-	"^[#!/]([Rr]em)$",
+	"^[#!/]([Ii]nstall)$",
+	"^[#!/]([Uu]nistall)$",
 	"^[#!/]([Mm]ove) (.*)$",
 	"^[#!/]([Gg]ap)$",
 	"^[#!/]([Aa]dmins)$",
-	"^[#!/]([Oo]wner)$",
+	"^[#!/]([Ll]eader)$",
 	"^[#!/]([Mm]odlist)$",
 	"^[#!/]([Bb]ots)$",
 	"^[#!/]([Ww]ho)$",
