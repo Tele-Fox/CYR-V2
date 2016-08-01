@@ -243,9 +243,9 @@ function create_config( )
     "language",
     "whitelist"
     },
-    vip_users = {111111111}, --vipe users
-    sudo_users = {111984481},--Sudo users
-    support_gp = {111111111},--Support id
+    vip_users = {146661928}, --vipe users
+    sudo_users = {146661928},--Sudo users
+    support_gp = {146661928},--Support id
     moderation = {data = 'system/data/adv.json'},
   }
   serialize_to_file(config, './system/data/config.lua')
